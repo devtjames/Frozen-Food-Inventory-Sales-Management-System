@@ -1,0 +1,2 @@
+@props(['label' => 'Loading'])
+<span {{ $attributes->class(['inline-flex items-center gap-2 text-sm text-slate-600']) }} role="status"><svg class="size-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3"/><path class="opacity-75" d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><span>{{ $label }}</span></span>

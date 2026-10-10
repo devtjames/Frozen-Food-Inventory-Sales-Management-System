@@ -1,0 +1,20 @@
+<x-layouts.app title="Stock receiving history">
+    <div class="space-y-6">
+        <x-page-heading title="Stock receiving history" description="Every delivery remains separate and traceable to its batch and recorder."><x-slot:actions><x-button href="{{ route('admin.inventory.receipts.create') }}">Receive stock</x-button></x-slot:actions></x-page-heading>
+        <x-inventory-nav />
+        <form method="GET" action="{{ route('admin.inventory.receipts.index') }}" class="card grid gap-4 p-4 md:grid-cols-[minmax(14rem,1fr)_minmax(14rem,0.8fr)_auto] md:items-end">
+            <x-search-field name="search" label="Search receipts" placeholder="Product, supplier, or reference" :value="$filters['search'] ?? null" />
+            <x-searchable-dropdown name="product" label="Product" :options="$products" :selected="$filters['product'] ?? null" placeholder="All products" search-placeholder="Search products" />
+            <div class="flex gap-2"><x-button type="submit" class="flex-1 md:flex-none">Filter</x-button>@if(array_filter($filters))<x-button href="{{ route('admin.inventory.receipts.index') }}" variant="secondary" class="flex-1 md:flex-none">Clear</x-button>@endif</div>
+        </form>
+        @if($receipts->isEmpty())
+            <x-empty-state title="No stock receipts found" description="Receive stock or change the current filters." />
+        @else
+            <x-responsive-table label="Stock receipts">
+                <x-slot:mobile>@foreach($receipts as $receipt)<article class="p-4"><div class="flex justify-between gap-3"><div><h2 class="font-bold text-slate-950">{{ $receipt->product->name }}</h2><p class="text-sm text-slate-500">{{ $formatter->transactionTimestamp($receipt->received_at) }}</p></div><p class="font-bold text-brand-800">{{ $formatter->kilograms($receipt->quantity_received) }}</p></div><dl class="mt-4 grid grid-cols-2 gap-3 text-sm"><div><dt class="text-slate-500">Cost/kg</dt><dd class="font-medium">{{ $formatter->money($receipt->purchase_cost_per_kg) }}</dd></div><div><dt class="text-slate-500">Total cost</dt><dd class="font-medium">{{ $formatter->money($receipt->total_purchase_cost) }}</dd></div><div><dt class="text-slate-500">Remaining batch</dt><dd class="font-medium">{{ $formatter->kilograms($receipt->batch->remaining_quantity) }}</dd></div><div><dt class="text-slate-500">Reference</dt><dd class="font-medium">{{ $receipt->reference_number ?: '—' }}</dd></div></dl><div class="mt-4"><x-button href="{{ route('admin.inventory.receipts.show', $receipt) }}" variant="secondary">View receipt</x-button></div></article>@endforeach</x-slot:mobile>
+                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th class="px-5 py-3 font-semibold">Product</th><th class="px-5 py-3 font-semibold">Received</th><th class="px-5 py-3 font-semibold">Cost/kg</th><th class="px-5 py-3 font-semibold">Total</th><th class="px-5 py-3 font-semibold">Batch remaining</th><th class="px-5 py-3 font-semibold">Date</th><th class="px-5 py-3 text-right font-semibold">Action</th></tr></thead>
+                <tbody class="divide-y divide-slate-200 bg-white">@foreach($receipts as $receipt)<tr><td class="px-5 py-4"><p class="font-semibold">{{ $receipt->product->name }}</p><p class="text-xs text-slate-500">{{ $receipt->reference_number ?: 'No reference' }}</p></td><td class="px-5 py-4 font-semibold">{{ $formatter->kilograms($receipt->quantity_received) }}</td><td class="px-5 py-4">{{ $formatter->money($receipt->purchase_cost_per_kg) }}</td><td class="px-5 py-4">{{ $formatter->money($receipt->total_purchase_cost) }}</td><td class="px-5 py-4">{{ $formatter->kilograms($receipt->batch->remaining_quantity) }}</td><td class="whitespace-nowrap px-5 py-4">{{ $formatter->transactionTimestamp($receipt->received_at) }}</td><td class="px-5 py-4 text-right"><x-button href="{{ route('admin.inventory.receipts.show', $receipt) }}" variant="secondary">View</x-button></td></tr>@endforeach</tbody>
+            </x-responsive-table><x-pagination :paginator="$receipts" />
+        @endif
+    </div>
+</x-layouts.app>

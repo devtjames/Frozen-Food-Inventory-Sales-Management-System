@@ -1,0 +1,3 @@
+@props(['label', 'value', 'hint' => null, 'tone' => 'brand'])
+@php($classes = match($tone) {'danger' => 'border-red-200 bg-red-50 text-red-950', 'warning' => 'border-amber-200 bg-amber-50 text-amber-950', 'success' => 'border-emerald-200 bg-emerald-50 text-emerald-950', default => 'border-slate-200 bg-white text-slate-950'})
+<article {{ $attributes->class(['rounded-2xl border p-4 shadow-sm sm:p-5', $classes]) }}><p class="text-sm font-semibold opacity-70">{{ $label }}</p><p class="mt-2 break-words text-2xl font-bold tracking-tight sm:text-3xl">{{ $value }}</p>@if($hint)<p class="mt-2 text-xs opacity-70">{{ $hint }}</p>@endif</article>
